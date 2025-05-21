@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTC RSI Alert Dashboard</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      max-width: 900px; 
+      margin: auto; 
+      background: #f0f2f5; 
+      padding: 20px; 
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+      margin-bottom: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .info-box {
+      background: #e8f4fc;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border-left: 4px solid #2196F3;
+    }
+    .success {
+      background-color: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+    .warning {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow: auto;
+    }
+    code {
+      font-family: 'Courier New', monospace;
+    }
+    .btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BTC RSI Alert Dashboard</h1>
+    <p>Trang này hiển thị trạng thái hiện tại của hệ thống cảnh báo RSI BTC.</p>
+    
+    <div class="info-box">
+      <strong>Lưu ý:</strong> Hệ thống này chạy hoàn toàn trên GitHub Actions và không cần máy tính của bạn phải bật để hoạt động.
+    </div>
+    
+    <h2>Trạng thái hiện tại</h2>
+    <div class="info-box success">
+      <p>✅ GitHub Actions đang chạy và kiểm tra RSI mỗi giờ.</p>
+      <p>📧 Cảnh báo sẽ được gửi tới email: <span id="alert-email">lethequyen13@gmail.com</span></p>
+    </div>
+    
+    <h2>Cấu hình cảnh báo</h2>
+    <pre><code id="config-display">{
+  "email": "lethequyen13@gmail.com",
+  "threshold": 45,
+  "period": "24",
+  "condition": "below"
+}</code></pre>
+    
+    <p>Cấu hình này có nghĩa là: Gửi cảnh báo khi RSI(24) xuống dưới ngưỡng 45.</p>
+    
+    <h2>Lần cảnh báo gần nhất</h2>
+    <p id="last-alert">Chưa có cảnh báo nào được gửi.</p>
+    
+    <h2>Thay đổi cấu hình</h2>
+    <p>Để thay đổi cấu hình, bạn cần chỉnh sửa file <code>config.json</code> trong repository GitHub của bạn.</p>
+    
+    <a href="https://github.com/USERNAME/BTC-RSI-ALERT/edit/main/config.json" class="btn" target="_blank">Chỉnh sửa cấu hình</a>
+  </div>
+  
+  <div class="container">
+    <h2>Cách kiểm tra thủ công</h2>
+    <p>Bạn có thể kích hoạt kiểm tra RSI thủ công bằng cách chạy GitHub Actions:</p>
+    
+    <a href="https://github.com/USERNAME/BTC-RSI-ALERT/actions/workflows/btc-rsi-alert.yml" class="btn" target="_blank">Chạy kiểm tra ngay</a>
+    
+    <h2>Giải thích giá trị RSI</h2>
+    <ul>
+      <li><strong>RSI &lt; 30:</strong> Thị trường có thể đang trong trạng thái quá bán</li>
+      <li><strong>RSI &gt; 70:</strong> Thị trường có thể đang trong trạng thái quá mua</li>
+      <li><strong>RSI = 50:</strong> Thị trường trung tính</li>
+    </ul>
+    
+    <div class="info-box warning">
+      <p><strong>Lưu ý:</strong> Thông tin RSI chỉ mang tính chất tham khảo và không phải là lời khuyên đầu tư.</p>
+    </div>
+  </div>
+  
+  <script>
+    // Đây chỉ là script demo, trong thực tế bạn cần fetch dữ liệu từ GitHub
+    // Hoặc lưu trạng thái trong GitHub repository
+    document.addEventListener('DOMContentLoaded', function() {
+      const configStr = localStorage.getItem('btcRsiConfig');
+      const lastAlertTime = localStorage.getItem('lastAlertSent');
+      
+      if (configStr) {
+        document.getElementById('config-display').textContent = configStr;
+        const config = JSON.parse(configStr);
+        document.getElementById('alert-email').textContent = config.email;
+      }
+      
+      if (lastAlertTime) {
+        const date = new Date(parseInt(lastAlertTime));
+        document.getElementById('last-alert').textContent = 
+          `Cảnh báo cuối cùng được gửi vào: ${date.toLocaleString()}`;
+      }
+    });
+  </script>
+</body>
+</html>
