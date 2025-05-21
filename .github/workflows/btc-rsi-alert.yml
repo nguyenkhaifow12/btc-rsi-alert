@@ -1,0 +1,69 @@
+name: BTC RSI Alert
+
+on:
+  schedule:
+    # Chạy mỗi giờ
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # Cho phép chạy thủ công từ giao diện GitHub
+
+jobs:
+  check-rsi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install axios nodemailer
+
+      - name: Check if config.json exists
+        id: check_config
+        run: |
+          if [ -f "config.json" ]; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
+
+      - name: Create default config if not exists
+        if: steps.check_config.outputs.exists == 'false'
+        run: |
+          echo '{
+            "email": "${{ secrets.ALERT_EMAIL }}",
+            "threshold": 45,
+            "period": "24",
+            "condition": "below"
+          }' > config.json
+
+      - name: Check RSI and send alert
+        run: node btc-rsi-checker.js
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          ALERT_THRESHOLD: ${{ secrets.ALERT_THRESHOLD }}
+          ALERT_PERIOD: ${{ secrets.ALERT_PERIOD }}
+          ALERT_CONDITION: ${{ secrets.ALERT_CONDITION }}
+
+      - name: Commit last alert time
+        if: success()
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add last-alert.json || true
+          git commit -m "Update last alert time" || true
+          git push || true
