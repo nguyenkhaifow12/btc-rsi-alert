@@ -1,0 +1,22 @@
+{
+  "name": "btc-rsi-alert",
+  "version": "1.0.0",
+  "description": "Hệ thống cảnh báo RSI cho Bitcoin (BTC) sử dụng GitHub Actions",
+  "main": "btc-rsi-checker.js",
+  "scripts": {
+    "check": "node btc-rsi-checker.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bitcoin",
+    "rsi",
+    "alert",
+    "crypto"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "nodemailer": "^6.9.7"
+  }
+}
